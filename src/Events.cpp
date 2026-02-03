@@ -57,8 +57,8 @@ static FunctionTable functionTable = {
 $on_mod(Loaded) {
     // Register the event to fetch the function table
     using namespace geode::prelude;
-    new EventListener<EventFilter<FetchTableEvent>>(+[](FetchTableEvent* e) {
-        e->table = &functionTable;
+    FetchTableEvent().listen([](FunctionTable const*& vtable) {
+        vtable = &functionTable;
         return ListenerResult::Stop;
-    });
+    }).leak();
 }

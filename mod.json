@@ -1,14 +1,14 @@
 {
-    "geode": "4.10.0",
+    "geode": "5.0.0-alpha.1",
     "gd": {
-        "win": "2.2074",
-        "android": "2.2074",
-        "mac": "2.2074",
-        "ios": "2.2074"
+        "win": "*",
+        "android": "*",
+        "mac": "2.2081",
+        "ios": "2.2081"
     },
     "id": "prevter.imageplus",
     "name": "ImagePlus",
-    "version": "v1.0.4",
+    "version": "v1.0.5-beta.1",
     "developer": "prevter",
     "description": "API mod that adds more image formats",
     "early-load": true,

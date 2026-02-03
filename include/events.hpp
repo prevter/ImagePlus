@@ -83,17 +83,14 @@ namespace imgp {
             AnimatedSpriteGetFrameCount AnimatedSprite_getFrameCount = nullptr;
         };
 
-        struct FetchTableEvent final : geode::Event {
-            FetchTableEvent() = default;
-            FunctionTable const* table = nullptr;
+        struct FetchTableEvent : geode::SimpleEvent<FetchTableEvent, FunctionTable const*&> {
+            using SimpleEvent::SimpleEvent;
         };
 
         inline FunctionTable const* getFunctionTable() {
             static FunctionTable const* table = nullptr;
             if (!table) {
-                FetchTableEvent evt{};
-                evt.post();
-                table = evt.table;
+                FetchTableEvent().send(table);
             }
             return table;
         }
