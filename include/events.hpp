@@ -83,8 +83,8 @@ namespace imgp {
             AnimatedSpriteGetFrameCount AnimatedSprite_getFrameCount = nullptr;
         };
 
-        struct FetchTableEvent : geode::SimpleEvent<FetchTableEvent, FunctionTable const*&> {
-            using SimpleEvent::SimpleEvent;
+        struct FetchTableEvent : geode::Event<FetchTableEvent, bool(FunctionTable const*&)> {
+            using Event::Event;
         };
 
         inline FunctionTable const* getFunctionTable() {
@@ -426,3 +426,4 @@ namespace imgp {
 }
 
 #endif // IMAGE_PLUS_EVENTS_HPP
+
