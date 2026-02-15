@@ -1,5 +1,5 @@
-# v1.0.5-beta.1 (WIP)
-- Updated to support Geode v5.0.0-alpha.1
+# v1.0.5
+- Updated to support Geode v5.0.0-beta.1
 - Ported to new Events V2
 
 # v1.0.4
