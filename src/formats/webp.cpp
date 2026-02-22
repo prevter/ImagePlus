@@ -53,7 +53,7 @@ namespace decode {
         }
     }
 
-    Result<DecodedResult> webp(void const* data, size_t size) {
+    static Result<DecodedResult> webpInner(void const* data, size_t size, bool onlyHeader) {
         WebPData webpData{static_cast<const uint8_t*>(data), size};
 
         std::unique_ptr<WebPDemuxer, decltype(&WebPDemuxDelete)> demux(WebPDemux(&webpData), &WebPDemuxDelete);
@@ -66,18 +66,22 @@ namespace decode {
             if (WebPGetFeatures(webpData.bytes, webpData.size, &feats) != VP8_STATUS_OK)
                 return Err("Failed to get WebP features");
 
+            DecodedImage img {
+                .width = static_cast<uint16_t>(feats.width),
+                .height = static_cast<uint16_t>(feats.height),
+                .hasAlpha = feats.has_alpha != 0
+            };
+
+            if (onlyHeader) return Ok(std::move(img));
+
             uint8_t* decoded = feats.has_alpha
                                ? WebPDecodeRGBA(webpData.bytes, webpData.size, nullptr, nullptr)
                                : WebPDecodeRGB(webpData.bytes, webpData.size, nullptr, nullptr);
 
             if (!decoded) return Err("Failed to decode static WebP image");
 
-            return Ok(DecodedImage{
-                .data = std::unique_ptr<uint8_t[]>(decoded),
-                .width = static_cast<uint16_t>(feats.width),
-                .height = static_cast<uint16_t>(feats.height),
-                .hasAlpha = feats.has_alpha != 0
-            });
+            img.data = std::unique_ptr<uint8_t[]>(decoded);
+            return Ok(DecodedResult{std::move(img)});
         }
 
         uint32_t loopCount = WebPDemuxGetI(demux.get(), WEBP_FF_LOOP_COUNT);
@@ -91,6 +95,8 @@ namespace decode {
         anim.hasAlpha = hasAlpha;
         anim.width = static_cast<uint16_t>(canvasW);
         anim.height = static_cast<uint16_t>(canvasH);
+
+        if (onlyHeader) return Ok(DecodedResult{std::move(anim)});
 
         size_t canvasSize = canvasW * canvasH * (hasAlpha ? 4 : 3);
         std::vector<uint8_t> canvas(canvasSize, 0);
@@ -140,6 +146,14 @@ namespace decode {
 
         WebPDemuxReleaseIterator(&iter);
         return Ok(DecodedResult{std::move(anim)});
+    }
+
+    Result<DecodedResult> webp(void const* data, size_t size) {
+        return webpInner(data, size, false);
+    }
+
+    Result<DecodedResult> webpHeader(void const* data, size_t size) {
+        return webpInner(data, size, false);
     }
 }
 

@@ -6,7 +6,7 @@ using namespace imgp::v1;
 using namespace imgp::__detail;
 
 static FunctionTable functionTable = {
-    .version = 1,
+    .version = 2,
     .guessFormat = &guessFormat,
     .tryDecode = &tryDecode,
 
@@ -52,6 +52,19 @@ static FunctionTable functionTable = {
     .AnimatedSprite_getCurrentFrame = reinterpret_cast<FunctionTable::AnimatedSpriteGetCurrentFrame>(&AnimatedSprite::getCurrentFrame),
     .AnimatedSprite_setCurrentFrame = reinterpret_cast<FunctionTable::AnimatedSpriteSetCurrentFrame>(&AnimatedSprite::setCurrentFrame),
     .AnimatedSprite_getFrameCount = reinterpret_cast<FunctionTable::AnimatedSpriteGetFrameCount>(&AnimatedSprite::getFrameCount),
+
+    // == Static Image Decoding (header only) == //
+    .decodePngHeader = &decode::pngHeader,
+    .decodeQoiHeader = nullptr, // not implemented
+
+    // == Animated Image Decoding (header only) == //
+    .decodeJpegXLHeader = nullptr, // not implemented
+    .decodeWebpHeader = &decode::webpHeader,
+    .decodeGifHeader = nullptr, // not implemented
+
+    // == Static Image Decoding (into a user-provided buffer) == //
+    .decodePngInto = &decode::pngInto,
+    .decodeQoiInto = nullptr, // not implemented
 };
 
 $on_mod(Loaded) {

@@ -7,25 +7,31 @@ using namespace geode;
 
 IMAGE_PLUS_BEGIN_NAMESPACE
 namespace decode {
-    Result<DecodedImage> png(void const* data, size_t size) {
-        std::unique_ptr<spng_ctx, decltype(&spng_ctx_free)> ctx(spng_ctx_new(0), &spng_ctx_free);
+    static constexpr bool hasAlpha = true;
 
-        if (!ctx || spng_set_png_buffer(ctx.get(), data, size) != 0)
+    static Result<> parseHeader(void const* data, size_t size, spng_ctx* ctx, spng_ihdr& ihdr) {
+        if (!ctx || spng_set_png_buffer(ctx, data, size) != 0)
             return Err("Failed to create PNG context or set buffer");
 
-        spng_ihdr ihdr;
-        if (spng_get_ihdr(ctx.get(), &ihdr) != 0)
+        if (spng_get_ihdr(ctx, &ihdr) != 0)
             return Err("Failed to get PNG header");
 
-        constexpr bool hasAlpha = true;
+        if (ihdr.width > 65535 || ihdr.height > 65535)
+            return Err("PNG image dimensions exceed 65535 pixels");
+
+        return Ok();
+    }
+
+    Result<DecodedImage> png(void const* data, size_t size) {
+        std::unique_ptr<spng_ctx, decltype(&spng_ctx_free)> ctx(spng_ctx_new(0), &spng_ctx_free);
+        spng_ihdr ihdr;
+        GEODE_UNWRAP(parseHeader(data, size, ctx.get(), ihdr));
+
         auto fmt = hasAlpha ? SPNG_FMT_RGBA8 : SPNG_FMT_RGB8;
 
         size_t totalSize;
         if (spng_decoded_image_size(ctx.get(), fmt, &totalSize) != 0)
             return Err("Failed to get PNG decoded image size");
-
-        if (ihdr.width > 65535 || ihdr.height > 65535)
-            return Err("PNG image dimensions exceed 65535 pixels");
 
         auto output = std::make_unique<uint8_t[]>(totalSize);
         if (!output)
@@ -42,6 +48,41 @@ namespace decode {
             .bit_depth = ihdr.bit_depth,
             .hasAlpha = hasAlpha
         });
+    }
+
+    Result<DecodedImage> pngHeader(void const* data, size_t size) {
+        std::unique_ptr<spng_ctx, decltype(&spng_ctx_free)> ctx(spng_ctx_new(0), &spng_ctx_free);
+        spng_ihdr ihdr;
+        GEODE_UNWRAP(parseHeader(data, size, ctx.get(), ihdr));
+
+        return Ok(DecodedImage {
+            .data = nullptr,
+            .width = static_cast<uint16_t>(ihdr.width),
+            .height = static_cast<uint16_t>(ihdr.height),
+            .bit_depth = ihdr.bit_depth,
+            .hasAlpha = hasAlpha
+        });
+    }
+
+    Result<size_t> pngInto(void const* data, size_t size, void* buf, size_t bufSize) {
+        std::unique_ptr<spng_ctx, decltype(&spng_ctx_free)> ctx(spng_ctx_new(0), &spng_ctx_free);
+        spng_ihdr ihdr;
+        GEODE_UNWRAP(parseHeader(data, size, ctx.get(), ihdr));
+
+        auto fmt = hasAlpha ? SPNG_FMT_RGBA8 : SPNG_FMT_RGB8;
+
+        size_t totalSize;
+        if (spng_decoded_image_size(ctx.get(), fmt, &totalSize) != 0)
+            return Err("Failed to get PNG decoded image size");
+
+        if (bufSize < totalSize)
+            return Err("Output buffer is too small for decoded PNG image");
+
+        if (spng_decode_image(ctx.get(), buf, bufSize, fmt, hasAlpha ? SPNG_DECODE_TRNS : 0) != 0) {
+            return Err("Failed to decode PNG image");
+        }
+
+        return Ok(totalSize);
     }
 }
 
