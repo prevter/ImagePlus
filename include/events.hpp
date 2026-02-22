@@ -16,7 +16,9 @@ namespace imgp {
             using GuessFormat = ImageFormat (*)(void const*, size_t);
             using CheckFunc = bool (*)(void const*, size_t);
             using DecodeFunc1 = geode::Result<DecodedImage> (*)(void const*, size_t);
+            using DecodeFunc1Hdr = geode::Result<DecodedImage> (*)(void const*, size_t);
             using DecodeFunc2 = geode::Result<DecodedResult> (*)(void const*, size_t);
+            using DecodeFunc2Hdr = geode::Result<DecodedResult> (*)(void const*, size_t);
             using DecodeFunc3 = geode::Result<DecodedResult> (*)(void const*, size_t, ImageFormat);
             using EncodeFunc1 = geode::Result<geode::ByteVector> (*)(void const*, uint16_t, uint16_t, bool);
             using EncodeFunc2 = geode::Result<geode::ByteVector> (*)(void const*, uint16_t, uint16_t, bool, float);
@@ -33,7 +35,7 @@ namespace imgp {
             using AnimatedSpriteGetFrameCount = size_t (cocos2d::CCSprite::*)();
 
             // For adding new functions and checking version compatibility
-            size_t version = 1;
+            size_t version = 2;
 
             // == Guessing Format == //
             GuessFormat guessFormat = nullptr;
@@ -81,6 +83,17 @@ namespace imgp {
             AnimatedSpriteGetCurrentFrame AnimatedSprite_getCurrentFrame = nullptr;
             AnimatedSpriteSetCurrentFrame AnimatedSprite_setCurrentFrame = nullptr;
             AnimatedSpriteGetFrameCount AnimatedSprite_getFrameCount = nullptr;
+
+            // Version 2 additions:
+
+            // == Static Image Decoding (header only) == //
+            DecodeFunc1Hdr decodePngHeader = nullptr;
+            DecodeFunc1Hdr decodeQoiHeader = nullptr;
+
+            // == Animated Image Decoding (header only) == //
+            DecodeFunc2Hdr decodeJpegXLHeader = nullptr;
+            DecodeFunc2Hdr decodeWebpHeader = nullptr;
+            DecodeFunc2Hdr decodeGifHeader = nullptr;
         };
 
         struct FetchTableEvent : geode::Event<FetchTableEvent, bool(FunctionTable const*&)> {
@@ -141,11 +154,31 @@ namespace imgp {
             return table->func(data, size); \
         }
 
+    #define IMAGE_PLUS_GEN_DECODE_FUNC1_HDR(name, func) \
+        inline geode::Result<DecodedImage> name(void const* data, size_t size) { \
+            auto table = __detail::getFunctionTable(); \
+            if (!table) \
+                return geode::Err("ImagePlus is not available"); \
+            if (table->version < 2 || !table->func) \
+                return geode::Err("Installed ImagePlus version does not support header decoding"); \
+            return table->func(data, size); \
+        }
+
     #define IMAGE_PLUS_GEN_DECODE_FUNC2(name, func) \
         inline geode::Result<DecodedResult> name(void const* data, size_t size) { \
             auto table = __detail::getFunctionTable(); \
             if (!table || !table->func) \
                 return geode::Err("ImagePlus is not available"); \
+            return table->func(data, size); \
+        }
+
+    #define IMAGE_PLUS_GEN_DECODE_FUNC2_HDR(name, func) \
+        inline geode::Result<DecodedResult> name(void const* data, size_t size) { \
+            auto table = __detail::getFunctionTable(); \
+            if (!table) \
+                return geode::Err("ImagePlus is not available"); \
+            if (table->version < 2 || !table->func) \
+                return geode::Err("Installed ImagePlus version does not support header decoding"); \
             return table->func(data, size); \
         }
 
@@ -225,6 +258,12 @@ namespace imgp {
         /// @return Result containing the decoded image or an error message
         IMAGE_PLUS_GEN_DECODE_FUNC1(png, decodePng)
 
+        /// @brief Decodes a PNG header and returns the decoded image metadata, without decoding pixels
+        /// @param data Pointer to the image data
+        /// @param size Size of the image data
+        /// @return Result containing the decoded metadata or an error message
+        IMAGE_PLUS_GEN_DECODE_FUNC1_HDR(pngHeader, decodePngHeader)
+
         /// @brief Decodes a QOI image and returns the decoded image data
         /// @note User is responsible for freeing the image data
         /// @param data Pointer to the image data
@@ -247,6 +286,12 @@ namespace imgp {
         /// @param size Size of the image data
         /// @return Result containing the decoded image or an error message
         IMAGE_PLUS_GEN_DECODE_FUNC2(webp, decodeWebp)
+
+        /// @brief Decodes a WEBP header and returns the image metadata, without decoding pixels
+        /// @param data Pointer to the image data
+        /// @param size Size of the image data
+        /// @return Result containing the decoded metadata or an error message
+        IMAGE_PLUS_GEN_DECODE_FUNC2_HDR(webpHeader, decodeWebpHeader)
 
         /// @brief Decodes a GIF image and returns either a single frame or an animation
         /// @note User is responsible for freeing the image data (if single frame)

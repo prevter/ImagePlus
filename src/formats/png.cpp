@@ -7,6 +7,8 @@ using namespace geode;
 
 IMAGE_PLUS_BEGIN_NAMESPACE
 namespace decode {
+    static constexpr bool hasAlpha = true;
+
     Result<DecodedImage> png(void const* data, size_t size) {
         std::unique_ptr<spng_ctx, decltype(&spng_ctx_free)> ctx(spng_ctx_new(0), &spng_ctx_free);
 
@@ -17,7 +19,6 @@ namespace decode {
         if (spng_get_ihdr(ctx.get(), &ihdr) != 0)
             return Err("Failed to get PNG header");
 
-        constexpr bool hasAlpha = true;
         auto fmt = hasAlpha ? SPNG_FMT_RGBA8 : SPNG_FMT_RGB8;
 
         size_t totalSize;
@@ -37,6 +38,28 @@ namespace decode {
 
         return Ok(DecodedImage{
             .data = std::move(output),
+            .width = static_cast<uint16_t>(ihdr.width),
+            .height = static_cast<uint16_t>(ihdr.height),
+            .bit_depth = ihdr.bit_depth,
+            .hasAlpha = hasAlpha
+        });
+    }
+
+    Result<DecodedImage> pngHeader(void const* data, size_t size) {
+        std::unique_ptr<spng_ctx, decltype(&spng_ctx_free)> ctx(spng_ctx_new(0), &spng_ctx_free);
+
+        if (!ctx || spng_set_png_buffer(ctx.get(), data, size) != 0)
+            return Err("Failed to create PNG context or set buffer");
+
+        spng_ihdr ihdr;
+        if (spng_get_ihdr(ctx.get(), &ihdr) != 0)
+            return Err("Failed to get PNG header");
+
+        if (ihdr.width > 65535 || ihdr.height > 65535)
+            return Err("PNG image dimensions exceed 65535 pixels");
+
+        return Ok(DecodedImage {
+            .data = nullptr,
             .width = static_cast<uint16_t>(ihdr.width),
             .height = static_cast<uint16_t>(ihdr.height),
             .bit_depth = ihdr.bit_depth,

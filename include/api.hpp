@@ -79,6 +79,12 @@ IMAGE_PLUS_BEGIN_NAMESPACE
         /// @return Result containing the decoded image or an error message
         geode::Result<DecodedImage> IMAGE_PLUS_DLL png(void const* data, size_t size);
 
+        /// @brief Decodes a PNG header and returns the decoded image metadata, without decoding pixels
+        /// @param data Pointer to the image data
+        /// @param size Size of the image data
+        /// @return Result containing the decoded metadata or an error message
+        geode::Result<DecodedImage> IMAGE_PLUS_DLL pngHeader(void const* data, size_t size);
+
         /// @brief Decodes a QOI image and returns the decoded image data
         /// @note User is responsible for freeing the image data
         /// @param data Pointer to the image data
@@ -101,6 +107,12 @@ IMAGE_PLUS_BEGIN_NAMESPACE
         /// @param size Size of the image data
         /// @return Result containing the decoded image or an error message
         geode::Result<DecodedResult> IMAGE_PLUS_DLL webp(void const* data, size_t size);
+
+        /// @brief Decodes a WEBP header and returns the image metadata, without decoding pixels
+        /// @param data Pointer to the image data
+        /// @param size Size of the image data
+        /// @return Result containing the decoded metadata or an error message
+        geode::Result<DecodedResult> IMAGE_PLUS_DLL webpHeader(void const* data, size_t size);
 
         /// @brief Decodes a GIF image and returns either a single frame or an animation
         /// @note User is responsible for freeing the image data (if single frame)

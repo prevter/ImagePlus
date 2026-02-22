@@ -52,6 +52,15 @@ static FunctionTable functionTable = {
     .AnimatedSprite_getCurrentFrame = reinterpret_cast<FunctionTable::AnimatedSpriteGetCurrentFrame>(&AnimatedSprite::getCurrentFrame),
     .AnimatedSprite_setCurrentFrame = reinterpret_cast<FunctionTable::AnimatedSpriteSetCurrentFrame>(&AnimatedSprite::setCurrentFrame),
     .AnimatedSprite_getFrameCount = reinterpret_cast<FunctionTable::AnimatedSpriteGetFrameCount>(&AnimatedSprite::getFrameCount),
+
+    // == Static Image Decoding (header only) == //
+    .decodePngHeader = &decode::pngHeader,
+    .decodeQoiHeader = nullptr, // not implemented
+
+    // == Animated Image Decoding (header only) == //
+    .decodeJpegXLHeader = nullptr, // not implemented
+    .decodeWebpHeader = &decode::webpHeader,
+    .decodeGifHeader = nullptr // not implemented
 };
 
 $on_mod(Loaded) {
