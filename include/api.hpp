@@ -85,6 +85,14 @@ IMAGE_PLUS_BEGIN_NAMESPACE
         /// @return Result containing the decoded metadata or an error message
         geode::Result<DecodedImage> IMAGE_PLUS_DLL pngHeader(void const* data, size_t size);
 
+        /// @brief Decodes a PNG image into the given buffer, returning an error if the buffer is too small or if decoding fails
+        /// @param data Pointer to the image data
+        /// @param size Size of the image data
+        /// @param buf Pointer to the buffer to decode into
+        /// @param bufSize Size of the buffer
+        /// @return Result containing the size of the decoded image data or an error message
+        geode::Result<size_t> IMAGE_PLUS_DLL pngInto(void const* data, size_t size, void* buf, size_t bufSize);
+
         /// @brief Decodes a QOI image and returns the decoded image data
         /// @note User is responsible for freeing the image data
         /// @param data Pointer to the image data

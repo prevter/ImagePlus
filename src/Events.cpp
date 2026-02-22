@@ -6,7 +6,7 @@ using namespace imgp::v1;
 using namespace imgp::__detail;
 
 static FunctionTable functionTable = {
-    .version = 1,
+    .version = 2,
     .guessFormat = &guessFormat,
     .tryDecode = &tryDecode,
 
@@ -60,7 +60,11 @@ static FunctionTable functionTable = {
     // == Animated Image Decoding (header only) == //
     .decodeJpegXLHeader = nullptr, // not implemented
     .decodeWebpHeader = &decode::webpHeader,
-    .decodeGifHeader = nullptr // not implemented
+    .decodeGifHeader = nullptr, // not implemented
+
+    // == Static Image Decoding (into a user-provided buffer) == //
+    .decodePngInto = &decode::pngInto,
+    .decodeQoiInto = nullptr, // not implemented
 };
 
 $on_mod(Loaded) {
