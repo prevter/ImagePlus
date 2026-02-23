@@ -1,3 +1,7 @@
+# v1.1.0
+- Updated to Geode v5.0.0
+- Added functions to decode into user buffer and read image header (by dankmeme01)
+
 # v1.0.5
 - Updated to support Geode v5.0.0-beta.1
 - Ported to new Events V2
