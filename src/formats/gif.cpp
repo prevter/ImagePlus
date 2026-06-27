@@ -38,7 +38,7 @@ namespace decode {
             img.height = static_cast<uint16_t>(y);
             img.hasAlpha = true;
             size_t imageSize = static_cast<size_t>(x) * y * 4;
-            img.data = std::make_unique<uint8_t[]>(imageSize);
+            img.data = std::make_unique_for_overwrite<uint8_t[]>(imageSize);
             std::memcpy(img.data.get(), raw, imageSize);
 
             STBI_FREE(raw);
@@ -57,7 +57,7 @@ namespace decode {
         for (int i = 0; i < frames; i++) {
             AnimationFrame f;
             f.delay = std::max(1, delays[i]);
-            f.data = std::make_unique<uint8_t[]>(frameSize);
+            f.data = std::make_unique_for_overwrite<uint8_t[]>(frameSize);
             std::memcpy(f.data.get(), raw + i * frameSize, frameSize);
             anim.frames.push_back(std::move(f));
         }

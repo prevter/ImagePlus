@@ -132,7 +132,7 @@ namespace decode {
             // copy full canvas to frame
             AnimationFrame frame;
             frame.delay = iter.duration;
-            frame.data = std::make_unique<uint8_t[]>(canvasSize);
+            frame.data = std::make_unique_for_overwrite<uint8_t[]>(canvasSize);
             std::memcpy(frame.data.get(), canvas.data(), canvasSize);
             anim.frames.push_back(std::move(frame));
 
