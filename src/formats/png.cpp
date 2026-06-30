@@ -33,10 +33,7 @@ namespace decode {
         if (spng_decoded_image_size(ctx.get(), fmt, &totalSize) != 0)
             return Err("Failed to get PNG decoded image size");
 
-        auto output = std::make_unique<uint8_t[]>(totalSize);
-        if (!output)
-            return Err("Failed to allocate memory for PNG image data");
-
+        auto output = std::make_unique_for_overwrite<uint8_t[]>(totalSize);
         if (spng_decode_image(ctx.get(), output.get(), totalSize, fmt, hasAlpha ? SPNG_DECODE_TRNS : 0) != 0) {
             return Err("Failed to decode PNG image");
         }
