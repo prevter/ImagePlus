@@ -34,13 +34,16 @@ jobs:
     runs-on: ${{ matrix.config.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
         with:
           combine: true
+          export-pdb: true
+          export-symbols: true
           target: ${{ matrix.config.target }}
+          build-config: ${{ matrix.config.name == 'Windows' && 'RelWithDebInfo' || 'Release' }}
 
   package:
     name: Package builds
@@ -51,7 +54,7 @@ jobs:
       - uses: geode-sdk/build-geode-mod/combine@main
         id: build
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: Build Output
           path: ${{ steps.build.outputs.build-output }}
