@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "../FakeVector.hpp"
+#include "../Utils.hpp"
 
 using namespace geode;
 
@@ -132,7 +133,12 @@ namespace decode {
             // copy full canvas to frame
             AnimationFrame frame;
             frame.delay = iter.duration;
-            frame.data = std::make_unique<uint8_t[]>(canvasSize);
+            frame.data = util::make_unique(canvasSize);
+            if (!frame.data) {
+                WebPDemuxReleaseIterator(&iter);
+                return Err("Failed to allocate memory for animation frame");
+            }
+
             std::memcpy(frame.data.get(), canvas.data(), canvasSize);
             anim.frames.push_back(std::move(frame));
 

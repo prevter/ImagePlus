@@ -1,3 +1,6 @@
+# v1.1.1
+- Made memory buffer allocations safer
+
 # v1.1.0
 - Updated to Geode v5.0.0
 - Added functions to decode into user buffer and read image header (by dankmeme01)

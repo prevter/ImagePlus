@@ -2,6 +2,7 @@
 #include <spng.h>
 
 #include "../FakeVector.hpp"
+#include "../Utils.hpp"
 
 using namespace geode;
 
@@ -33,7 +34,7 @@ namespace decode {
         if (spng_decoded_image_size(ctx.get(), fmt, &totalSize) != 0)
             return Err("Failed to get PNG decoded image size");
 
-        auto output = std::make_unique<uint8_t[]>(totalSize);
+        auto output = util::make_unique(totalSize);
         if (!output)
             return Err("Failed to allocate memory for PNG image data");
 
