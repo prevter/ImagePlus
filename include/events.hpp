@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <Geode/Result.hpp>
 #include <Geode/loader/Event.hpp>
+#include <Geode/cocos/sprite_nodes/CCSprite.hpp>
 
 #include "types.hpp"
 
