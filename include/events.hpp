@@ -300,7 +300,7 @@ namespace imgp {
         /// @param data Pointer to the image data
         /// @param size Size of the image data
         /// @return Result containing the decoded image or an error message
-        IMAGE_PLUS_GEN_DECODE_FUNC1(qoi, decodeQoi)
+        IMAGE_PLUS_GEN_DECODE_FUNC1(cgbi, decodeCGBI)
     #endif
 
         /// @brief Decodes a QOI image and returns the decoded image data
