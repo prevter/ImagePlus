@@ -25,7 +25,7 @@ namespace imgp {
         Gif    = 6,
         Qoi    = 7,
         JpegXL = 8,
-        CgBI   = 9, ///< @note Only available on iOS
+        CgBI   = 9, ///< @note Only available on iOS and macOS
     };
 
     /// @brief Helper converter to turn imgp::ImageFormat into cocos2d enum

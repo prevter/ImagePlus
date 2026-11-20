@@ -35,4 +35,4 @@ This mod uses the following libraries:
 
 ## License
 
-This mod is licensed under the MIT License. See [LICENSE.md](LICENSE.md) for more details.
+This mod is licensed under the MIT License. See [LICENSE.md](https://github.com/prevter/ImagePlus/blob/main/LICENSE.md) for more details.

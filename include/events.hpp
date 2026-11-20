@@ -21,10 +21,10 @@ namespace imgp {
             using DecodeFunc2 = geode::Result<DecodedResult> (*)(void const*, size_t);
             using DecodeFunc2Hdr = geode::Result<DecodedResult> (*)(void const*, size_t);
             using DecodeFunc3 = geode::Result<DecodedResult> (*)(void const*, size_t, ImageFormat);
-            using EncodeFunc1 = geode::Result<geode::ByteVector> (*)(void const*, uint16_t, uint16_t, bool);
-            using EncodeFunc2 = geode::Result<geode::ByteVector> (*)(void const*, uint16_t, uint16_t, bool, float);
-            using EncodeFunc3 = geode::Result<geode::ByteVector> (*)(DecodedAnimation const&, float);
-            using EncodeFunc4 = geode::Result<geode::ByteVector> (*)(DecodedAnimation const&);
+            using EncodeFunc1 = geode::Result<std::vector<uint8_t>> (*)(void const*, uint16_t, uint16_t, bool);
+            using EncodeFunc2 = geode::Result<std::vector<uint8_t>> (*)(void const*, uint16_t, uint16_t, bool, float);
+            using EncodeFunc3 = geode::Result<std::vector<uint8_t>> (*)(DecodedAnimation const&, float);
+            using EncodeFunc4 = geode::Result<std::vector<uint8_t>> (*)(DecodedAnimation const&);
             using AnimatedSpriteBoolRet = bool (cocos2d::CCSprite::*)();
             using AnimatedSpriteVoidRet = void (cocos2d::CCSprite::*)();
             using AnimatedSpriteSetPlaybackSpeed = void (cocos2d::CCSprite::*)(float);
@@ -99,6 +99,13 @@ namespace imgp {
             // == Static Image Decoding (into a user-provided buffer) == //
             DecodeFunc1Into decodePngInto = nullptr;
             DecodeFunc1Into decodeQoiInto = nullptr;
+
+            // Version 3:
+
+            // == Apple CGBI == //
+        #if defined(GEODE_IS_IOS) || defined(GEODE_IS_MACOS)
+            DecodeFunc1 decodeCGBI = nullptr;
+        #endif
         };
 
         struct FetchTableEvent : geode::Event<FetchTableEvent, bool(FunctionTable const*&)> {
@@ -198,7 +205,7 @@ namespace imgp {
         }
 
     #define IMAGE_PLUS_GEN_ENCODE_FUNC1(name, func) \
-        inline geode::Result<geode::ByteVector> name(void const* image, uint16_t width, uint16_t height, bool hasAlpha = true) { \
+        inline geode::Result<std::vector<uint8_t>> name(void const* image, uint16_t width, uint16_t height, bool hasAlpha = true) { \
             auto table = __detail::getFunctionTable(); \
             if (!table || !table->func) \
                 return geode::Err("ImagePlus is not available"); \
@@ -206,7 +213,7 @@ namespace imgp {
         }
 
     #define IMAGE_PLUS_GEN_ENCODE_FUNC2(name, func) \
-        inline geode::Result<geode::ByteVector> name(void const* image, uint16_t width, uint16_t height, bool hasAlpha = true, float quality = 75.f) { \
+        inline geode::Result<std::vector<uint8_t>> name(void const* image, uint16_t width, uint16_t height, bool hasAlpha = true, float quality = 75.f) { \
             auto table = __detail::getFunctionTable(); \
             if (!table || !table->func) \
                 return geode::Err("ImagePlus is not available"); \
@@ -214,7 +221,7 @@ namespace imgp {
         }
 
     #define IMAGE_PLUS_GEN_ENCODE_FUNC3(name, func) \
-        inline geode::Result<geode::ByteVector> name(DecodedAnimation const& anim, float quality = 75.f) { \
+        inline geode::Result<std::vector<uint8_t>> name(DecodedAnimation const& anim, float quality = 75.f) { \
             auto table = __detail::getFunctionTable(); \
             if (!table || !table->func) \
                 return geode::Err("ImagePlus is not available"); \
@@ -286,6 +293,15 @@ namespace imgp {
         /// @param bufSize Size of the buffer
         /// @return Result containing the size of the decoded image data or an error message
         IMAGE_PLUS_GEN_DECODE_FUNC1_USER_BUF(pngInto, decodePngInto)
+
+    #if defined(GEODE_IS_IOS) || defined(GEODE_IS_MACOS)
+        /// @brief Decodes a CgBI image and returns the decoded image data
+        /// @note User is responsible for freeing the image data
+        /// @param data Pointer to the image data
+        /// @param size Size of the image data
+        /// @return Result containing the decoded image or an error message
+        IMAGE_PLUS_GEN_DECODE_FUNC1(qoi, decodeQoi)
+    #endif
 
         /// @brief Decodes a QOI image and returns the decoded image data
         /// @note User is responsible for freeing the image data

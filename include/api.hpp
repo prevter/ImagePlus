@@ -106,7 +106,7 @@ IMAGE_PLUS_BEGIN_NAMESPACE
         /// @return Result containing the decoded image or an error message
         geode::Result<DecodedImage> IMAGE_PLUS_DLL qoi(void const* data, size_t size);
 
-    #if defined(GEODE_IS_IOS) || defined(GEODE_IS_MACOS)\
+    #if defined(GEODE_IS_IOS) || defined(GEODE_IS_MACOS)
         /// @brief Decodes a CgBI image (Apple's PNG variant) and returns the decoded image data
         /// @note User is responsible for freeing the image data
         /// @param data Pointer to the image data
@@ -152,7 +152,7 @@ IMAGE_PLUS_BEGIN_NAMESPACE
         /// @param height Height of the image
         /// @param hasAlpha Whether the image has an alpha channel (default is true)
         /// @return Result containing the encoded image data or an error message
-        geode::Result<geode::ByteVector> IMAGE_PLUS_DLL png(
+        geode::Result<std::vector<uint8_t>> IMAGE_PLUS_DLL png(
             void const* image, uint16_t width, uint16_t height, bool hasAlpha = true
         );
 
@@ -162,7 +162,7 @@ IMAGE_PLUS_BEGIN_NAMESPACE
         /// @param height Height of the image
         /// @param hasAlpha Whether the image has an alpha channel (default is true)
         /// @return Result containing the encoded image data or an error message
-        geode::Result<geode::ByteVector> IMAGE_PLUS_DLL qoi(
+        geode::Result<std::vector<uint8_t>> IMAGE_PLUS_DLL qoi(
             void const* image, uint16_t width, uint16_t height, bool hasAlpha = true
         );
 
@@ -173,7 +173,7 @@ IMAGE_PLUS_BEGIN_NAMESPACE
         /// @param hasAlpha Whether the image has an alpha channel (default is true)
         /// @param quality Quality of the encoding (default is 75.f)
         /// @return Result containing the encoded image data or an error message
-        geode::Result<geode::ByteVector> IMAGE_PLUS_DLL webp(
+        geode::Result<std::vector<uint8_t>> IMAGE_PLUS_DLL webp(
             void const* image, uint16_t width, uint16_t height, bool hasAlpha = true, float quality = 75.f
         );
 
@@ -184,7 +184,7 @@ IMAGE_PLUS_BEGIN_NAMESPACE
         /// @param hasAlpha Whether the image has an alpha channel (default is true)
         /// @param quality Quality of the encoding (default is 75.f)
         /// @return Result containing the encoded image data or an error message
-        geode::Result<geode::ByteVector> IMAGE_PLUS_DLL jpegxl(
+        geode::Result<std::vector<uint8_t>> IMAGE_PLUS_DLL jpegxl(
             void const* image, uint16_t width, uint16_t height, bool hasAlpha = true, float quality = 75.f
         );
 
@@ -192,13 +192,13 @@ IMAGE_PLUS_BEGIN_NAMESPACE
         /// @param anim The animation to encode
         /// @param quality The quality of the encoding (default is 75.f)
         /// @return Result containing the encoded animation data or an error message
-        geode::Result<geode::ByteVector> IMAGE_PLUS_DLL webp(DecodedAnimation const& anim, float quality = 75.f);
+        geode::Result<std::vector<uint8_t>> IMAGE_PLUS_DLL webp(DecodedAnimation const& anim, float quality = 75.f);
 
         /// @brief Encodes a JPEG XL animation from a DecodedAnimation
         /// @param anim The animation to encode
         /// @param quality The quality of the encoding (default is 75.f)
         /// @return Result containing the encoded animation data or an error message
-        geode::Result<geode::ByteVector> IMAGE_PLUS_DLL jpegxl(DecodedAnimation const& anim, float quality = 75.f);
+        geode::Result<std::vector<uint8_t>> IMAGE_PLUS_DLL jpegxl(DecodedAnimation const& anim, float quality = 75.f);
     }
 
     /// @brief Attempts to guess the image format based on the header data

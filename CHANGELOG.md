@@ -1,3 +1,7 @@
+# v1.2.0
+- Updated to Geode v6.0.0
+- Added support for Apple's proprietary CgBI format on iOS and macOS
+
 # v1.1.1
 - Made memory buffer allocations safer
 

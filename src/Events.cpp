@@ -65,6 +65,11 @@ static FunctionTable functionTable = {
     // == Static Image Decoding (into a user-provided buffer) == //
     .decodePngInto = &decode::pngInto,
     .decodeQoiInto = nullptr, // not implemented
+
+    // == Apple CGBI == //
+    #if defined(GEODE_IS_IOS) || defined(GEODE_IS_MACOS)
+    .decodeCGBI = &decode::cgbi,
+    #endif
 };
 
 $on_mod(Loaded) {

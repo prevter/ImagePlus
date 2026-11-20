@@ -1,5 +1,5 @@
 {
-    "geode": "6.0.0-alpha.1",
+    "geode": "6.0.0-beta.1",
     "gd": {
         "win": "*",
         "android": "*",
@@ -8,7 +8,7 @@
     },
     "id": "prevter.imageplus",
     "name": "ImagePlus",
-    "version": "v1.1.1",
+    "version": "v1.2.0",
     "developer": "prevter",
     "description": "API mod that adds more image formats",
     "early-load": true,
