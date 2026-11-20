@@ -5,7 +5,7 @@
 #include <Geode/Result.hpp>
 #include <Geode/platform/cplatform.h>
 #include <Geode/utils/general.hpp>
-#include <Geode/cocos/sprite_nodes/CCSprite.hpp>
+#include <Geode/cocos/sprite_nodes/CCSprite.h>
 #include "types.hpp"
 
 #include <cstddef>
