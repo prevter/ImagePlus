@@ -1,3 +1,6 @@
+# v1.2.2
+- Fix CgBI decoder using wrong blend mode on iOS
+
 # v1.2.1
 - Repackage to fix missing description/changelog
 

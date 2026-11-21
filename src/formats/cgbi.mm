@@ -68,6 +68,7 @@ namespace decode {
             return Err("Failed to create CGBitmapContext");
         }
 
+        CGContextSetBlendMode(context, kCGBlendModeCopy);
         CGContextDrawImage(context, CGRectMake(0, 0, width, height), image);
         CGContextRelease(context);
         CGImageRelease(image);
