@@ -1,3 +1,6 @@
+# v1.2.1
+- Repackage to fix missing description/changelog
+
 # v1.2.0
 - Updated to Geode v6.0.0
 - Added support for Apple's proprietary CgBI format on iOS and macOS
